@@ -59,7 +59,7 @@ app.util.ais = function(data){
             }
 
             if ($('#opaDataRow').attr('style')=='display: block;'){
-                app.views.opa(app.data.ais.curAIS.properties.opa_account_num)
+                app.util.opa(app.data.ais.curAIS.properties.opa_account_num)
             }
 
         }) // end of when
