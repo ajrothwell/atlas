@@ -53,10 +53,9 @@ app.util.ais = function(data){
 
             // if it found an L&I address key, hit L&I API (set this so it only happens when you click the accordian)
 
-            if (app.data.ais.curAIS.properties.li_address_key != ''){
-                app.util.li(app.data.ais.curAIS.properties.li_address_key)
-                //getLIData(app.data.ais.curAIS.properties.li_address_key)
-            }
+            //if (app.data.ais.curAIS.properties.li_address_key != ''){
+            //    app.util.li(app.data.ais.curAIS.properties.li_address_key)
+            //}
 
             if ($('#opaDataRow').attr('style')=='display: block;'){
                 app.util.opa(app.data.ais.curAIS.properties.opa_account_num)
