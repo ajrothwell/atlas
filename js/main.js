@@ -3,7 +3,8 @@ window.app = app;
 app.views = {};
 
 app.globals = {}
-app.globals.ais_api = 'http://ec2-54-175-56-73.compute-1.amazonaws.com/addresses/'
+app.globals.ais_api = 'https://api.phila.gov/ais/v1/addresses/'
+//app.globals.ais_api = 'http://ec2-54-175-56-73.compute-1.amazonaws.com/addresses/'
 app.globals.li_api = 'http://api.phila.gov/li/v1/'
 app.globals.opa_api = 'https://api.phila.gov/opa/v1.1/account/'
 app.globals.PennStatePlane = '+proj=lcc +lat_1=40.96666666666667 +lat_2=39.93333333333333 +lat_0=39.33333333333334 +lon_0=-77.75 +x_0=600000 +y_0=0 +ellps=GRS80 +datum=NAD83 +to_meter=0.3048006096012192 +no_defs';
@@ -102,7 +103,7 @@ app.util.formatSalesDate = function (salesDate) {
 $('#search-button').click(function(){
     app.settings.moveMode = true
     var address = $('#search-input').val()
-    var aisUrl = app.globals.ais_api + address
+    var aisUrl = app.globals.ais_api + address + '?format=json&gatekeeperKey=35ae5b7bf8f0ff2613134935ce6b4c1e'
     // AIS ajax
     $.ajax({
         url: aisUrl,

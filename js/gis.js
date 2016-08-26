@@ -71,7 +71,7 @@ app.gis = (function () {
                     app.data.gis.curFeatGeo = featureCollection.features[0].geometry
                     app.gis.drawPolygon(app.data.gis.curFeatGeo)
                     // AIS ajax
-                    var aisUrl = app.globals.ais_api + address
+                    var aisUrl = app.globals.ais_api + address + '?format=json&gatekeeperKey=35ae5b7bf8f0ff2613134935ce6b4c1e'
                     $.ajax({
                         url: aisUrl,
                         data: {
