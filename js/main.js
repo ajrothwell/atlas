@@ -65,9 +65,11 @@ $('a').each(function() {
    }
 });
 
+/*
 $('#schoolTrig').click(function(){
     overlayHS.addTo(map)
 });
+*/
 
 // OPA
 $('#opaTrig').click(function(){
