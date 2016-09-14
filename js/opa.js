@@ -1,47 +1,46 @@
 
 app.util.opa = function(acntNum){
+    //app.util.resolveOpa = $.Deferred();
+    var opaUrl = app.globals.opa_api + acntNum //+ "?format=json"
 
-    getOPAData(acntNum)
-
-    function getOPAData(anAccount){
-        var opaUrl = app.globals.opa_api + anAccount //+ "?format=json"
-        $.ajax({
-            url: opaUrl,
-            data: {
-                format: 'json'
-            },
-            success: function(data) {
-                app.data.opa.curOPA = data
-                renderOPA()
-                app.settings.opaRetrieved = true
-            },
-            type: 'GET'
+    $.ajax(opaUrl,
+        {dataType: app.settings.ajaxType,
+        data: {format: 'json'}
         })
-    }
+        .done(function(data){
+            // If we get a 200 response but an 400 error code (ummmmm), treat it like a fail.
 
-    function renderOPA(){
-        //console.log('starting render')
-        // Render owners
+            if (!data) {
+                history.replaceState({error: 'Failed to retrieve opa results. Please try another search.'}, '');
+                return;
+            }
+            app.data.opa.curOPA = data
+            app.util.resolveOpa.resolve();
 
-        app.hooks.propertyOwners.empty();
-        app.data.opa.curOPA.data.property.ownership.owners.forEach(function(owner) {
-        //state.opa.ownership.owners.forEach(function (owner) {
-            app.hooks.propertyOwners.append($('<div>').text(owner));
-        });
+        }
+    )
+}
 
-        // Render improvement stuff
-        //app.hooks.improvementDescription.text(app.data.opa.curOPA.data.property.characteristics.description);
-        app.hooks.landArea.text(accounting.formatNumber(app.data.opa.curOPA.data.property.characteristics.land_area));
-        app.hooks.improvementArea.text(accounting.formatNumber(app.data.opa.curOPA.data.property.characteristics.improvement_area));
+app.util.renderOPA = function(anOpaFeature){
+    // Render owners
+    app.hooks.propertyOwners.empty();
+    //app.data.opa.curOPA.data.property.ownership.owners.forEach(function(owner) {
+    anOpaFeature.data.property.ownership.owners.forEach(function(owner) {
+    //state.opa.ownership.owners.forEach(function (owner) {
+        app.hooks.propertyOwners.append($('<div>').text(owner));
+    });
 
-        // Empty zoning in prep for details
-        //app.hooks.zoning.empty();
+    // Render improvement stuff
+    //app.hooks.improvementDescription.text(app.data.opa.curOPA.data.property.characteristics.description);
+    app.hooks.landArea.text(accounting.formatNumber(app.data.opa.curOPA.data.property.characteristics.land_area));
+    app.hooks.improvementArea.text(accounting.formatNumber(app.data.opa.curOPA.data.property.characteristics.improvement_area));
 
-        // Render sales details
-        app.hooks.salesPrice.text(accounting.formatMoney(app.data.opa.curOPA.data.property.sales_information.sales_price));
-        app.hooks.salesDate.text(app.util.formatSalesDate(app.data.opa.curOPA.data.property.sales_information.sales_date));
+    // Empty zoning in prep for details
+    //app.hooks.zoning.empty();
 
-        app.hooks.assessedValue2017.text(accounting.formatMoney(app.data.opa.curOPA.data.property.valuation_history[0].market_value))
-    }
+    // Render sales details
+    app.hooks.salesPrice.text(accounting.formatMoney(app.data.opa.curOPA.data.property.sales_information.sales_price));
+    app.hooks.salesDate.text(app.util.formatSalesDate(app.data.opa.curOPA.data.property.sales_information.sales_date));
 
+    app.hooks.assessedValue2017.text(accounting.formatMoney(app.data.opa.curOPA.data.property.valuation_history[0].market_value))
 }

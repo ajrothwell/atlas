@@ -29,14 +29,24 @@
                     <img data-interchange="[//cityofphiladelphia.github.io/patterns/images/city-of-philadelphia-mobile.png, small], [//cityofphiladelphia.github.io/patterns/images/city-of-philadelphia-white.png, medium]" src="//cityofphiladelphia.github.io/patterns/images/city-of-philadelphia-white.png" alt="City of Philadelphia">
                   </a>
                   <div class="page-title-container">
-                    <a href="#/">
+                    <a href="#/" data-hook="title-anchor">
                       <h1 class="page-title">Betsy</h1>
                     </a>
                   </div>
                   <div id="search-container">
-                    <input type="text" placeholder="Which address are you looking for?" id="search-input">
-                    <a href="#" id="search-button" class="button no-margin">Go</a>
+                    <form id="theForm">
+                    <input type="text" placeholder="Which address are you looking for?" id="search-input" name="address">
+                    <!--<a href="#" id="search-button" class="button no-margin">Go</a>-->
+                    <!--<a href="address" id="search-button" class="button no-margin">Go</a>-->
+                    <input type="submit" class="button no-margin" id="search-button" value="GO">
+                    </form>
                   </div>
+
+                  <!--  <form data-hook="search-address" class="search-form-option">
+                  <input type="text" class="float-left field-lg" data-hook="search-address" name="a" placeholder="1234 Market St">
+                  <input type="text" class="float-left field-sm" data-hook="search-unit" name="u" placeholder="Unit #">
+                  <input type="submit">
+                </form>-->
                 </div>
               </div>
             </header>
@@ -53,7 +63,7 @@
 
                     <h1><span data-hook="street_address">Find An Address</span></h1>
                     <div id="data-row-list">
-                        <a class="data-row-link" href="/#/property/" id="opaTrig"><span class="data-row-link-icon flaticon-house"></span>Property Details</a>
+                        <a class="data-row-link" href="#/property/" id="opaTrig" data-hook="property-anchor"><span class="data-row-link-icon flaticon-house"></span>Property Details</a>
                         <div class="data-row" id="opaDataRow">
                             <table>
                                 <tr>
@@ -87,7 +97,7 @@
                             </table>
                             <a href="http://property.phila.gov/?p=011001100" class="external">See more at Property Search</a>
                         </div>
-                        <a class="data-row-link" href="/#/zoning/"><span class="data-row-link-icon flaticon-industrial-zone"></span>Zoning</a>
+                        <a class="data-row-link" href="#/zoning/" data-hook="zoning-anchor"><span class="data-row-link-icon flaticon-industrial-zone"></span>Zoning</a>
                         <div class="data-row">
                             <table>
                                 <tr>
@@ -113,7 +123,7 @@
                             </table>
                             <a href="http://www.phila.gov/zoningarchive/" class="external">See more at the Zoning Archive</a>
                         </div>
-                        <a class="data-row-link" href="/#/trash/"><span class="data-row-link-icon flaticon-garbage"></span>Trash + Recycling</a>
+                        <a class="data-row-link" href="#/trash/" data-hook="trash-anchor"><span class="data-row-link-icon flaticon-garbage"></span>Trash + Recycling</a>
                         <div class="data-row">
                             <table>
                                 <tr>
@@ -127,7 +137,7 @@
                             </table>
                             <a href="http://www.philadelphiastreets.com/" class="external">See more at the Streets Department</a>
                         </div>
-                        <a class="data-row-link" href="/#/schools/" id="schoolTrig"><span class="data-row-link-icon flaticon-graduate-diploma"></span>Schools</a>
+                        <a class="data-row-link" href="#/schools/" data-hook="schools-anchor"><span class="data-row-link-icon flaticon-graduate-diploma"></span>Schools</a>
                         <div class="data-row">
                             <table>
                                 <tr>
@@ -145,7 +155,7 @@
                             </table>
                             <a href="http://www.phila.k12.pa.us/" class="external">See more at the School District of Philadelphia</a>
                         </div>
-                        <a class="data-row-link" href="/#/schools/"><span class="data-row-link-icon flaticon-leaf"></span>Parks + Recreation</a>
+                        <a class="data-row-link" href="#/parks/" data-hook="parks-anchor"><span class="data-row-link-icon flaticon-leaf"></span>Parks + Recreation</a>
                         <div class="data-row">
                             <table>
                                 <tr>
@@ -173,9 +183,9 @@
                             </table>
                             <a href="http://www.phila.gov/parksandrecreation/Pages/default.aspx" class="external">See more at Philadelphia Parks and Recreation</a>
                         </div>
-                        <a class="data-row-link" href="/#/land-records/"><span class="data-row-link-icon flaticon-copy"></span>Land Records</a>
-                        <a class="data-row-link" href="/#/voting/"><span class="data-row-link-icon flaticon-correct"></span>Voting + Government</a>
-                        <a class="data-row-link" href="/#/licenses-and-inspections/"><span class="data-row-link-icon flaticon-hard-hat"></span>Licenses + Inspections</a>
+                        <a class="data-row-link" href="#/land-records/" data-hook="land-records-anchor"><span class="data-row-link-icon flaticon-copy"></span>Land Records</a>
+                        <a class="data-row-link" href="#/voting/" data-hook="voting-anchor"><span class="data-row-link-icon flaticon-correct"></span>Voting + Government</a>
+                        <a class="data-row-link" href="#/licenses-and-inspections/" data-hook="li-anchor"><span class="data-row-link-icon flaticon-hard-hat"></span>Licenses + Inspections</a>
                         <div class="data-row">
                             <table>
                                 <tr>
@@ -189,7 +199,7 @@
                             </table>
                             <a href="http://www.phila.gov/li/Pages/default.aspx" class="external">See more at Philadelphia Licenses & Inspections</a>
                         </div>
-                        <a class="data-row-link" href="/#/311/"><span class="data-row-link-icon flaticon-telephone"></span>311</a>
+                        <a class="data-row-link" href="#/311/" data-hook="311-anchor"><span class="data-row-link-icon flaticon-telephone"></span>311</a>
                     </div>
                 </div>
                 
@@ -210,10 +220,15 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4-src.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.min.js"></script>
         <!--<script src="https://raw.github.com/mapbox/leaflet-knn/master/leaflet-knn.min.js"></script>-->
+<!--        <script src="js/signals.js"></script>
+        <script src="js/crossroads.min.js"></script>-->
         <script src="js/gis.js"></script>
-        <script src="js/main.js"></script>
+        <script src="js/app.js"></script>
+        <script src="js/deparam.js"></script>
         <script src="js/ais.js"></script>
         <script src="js/opa.js"></script>
+        <script src="js/history.js"></script>
         <script src="js/li.js"></script>
+        <script src="js/views.js"></script>
     </body>
 </html>

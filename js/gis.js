@@ -1,12 +1,21 @@
 
 var app = {};
+app.util = {}
+
 app.gis = (function () {
+
+    //app.util.resolveGis = $.Deferred();
     //var map
     var queryParcel = L.esri.query({
         url: '//services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/PWD_PARCELS/FeatureServer/0'
     })
 
+    var overlayHS = L.esri.featureLayer({
+                url: '//services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/SchoolDist_Catchments_HS/FeatureServer/0'
+            });
+
     return {
+        //theObject: queryParcel,
         initMap : function () {
             var CITY_HALL = [39.952388, -75.163596];
             map = L.map('map', {
@@ -31,9 +40,9 @@ app.gis = (function () {
             var overlayZoning = L.esri.tiledMapLayer({
                 url: '//tiles.arcgis.com/tiles/fLeGjb7u4uXqeF9q/arcgis/rest/services/ZoningMap_tiled/MapServer'
             });
-            var overlayHS = L.esri.featureLayer({
+            /*var overlayHS = L.esri.featureLayer({
                 url: '//services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/SchoolDist_Catchments_HS/FeatureServer/0'
-            });
+            });*/
             var overlayES = L.esri.featureLayer({
                 url: '//services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/SchoolDist_Catchments_ES/FeatureServer/0'
             });
@@ -60,59 +69,62 @@ app.gis = (function () {
             //var measureControl = new L.Control.Measure({position: 'topright'});
             //measureControl.addTo(map);
             new L.Control.Zoom({position: 'topright'}).addTo(map);
+            app.data.gis.layerGroup.addTo(map)
 
-            // one of 2 ways to call findAddress()
+
+            // one of 2 ways to call AIS
             map.on('click', function(e) {
+                app.settings.clickedOnMap = true
                 app.settings.moveMode = false
                 // GIS query
                 queryParcel.contains(e.latlng)
                 queryParcel.run(function(error, featureCollection, response){  // this is a slow process - only want to do it once
                     var address = featureCollection.features[0].properties.ADDRESS
                     app.data.gis.curFeatGeo = featureCollection.features[0].geometry
-                    app.gis.drawPolygon(app.data.gis.curFeatGeo)
-                    // AIS ajax
-                    var aisUrl = app.globals.ais_api + address + '?format=json&gatekeeperKey=35ae5b7bf8f0ff2613134935ce6b4c1e'
-                    $.ajax({
-                        url: aisUrl,
-                        data: {
-                            format: 'json'
-                        },
-                        success: function(data) {
-                            app.util.ais(data);
-                            //findAddress(data);
-                        },
-                        type: 'GET'
-                    });
+
+                    var params = {'address': address}
+                    var queryStringParams = app.util.serializeQueryStringParams(params)
+                    if (queryStringParams) {
+                        history.pushState(null, null, '?' + queryStringParams); // when you submit it pushes a new history.state - but it just has an href, not a state obj
+                        window.scroll(0, 0);
+                        app.util.ais(address) // calls ais, which does a replaceState to the history to add objects
+                    }
                 });
             });
         }, // end of initMap
 
-        getGeom : function(latlon){
+        getGeomFromLatLon : function(latlon){
             queryParcel.contains(latlon)
-            queryParcel.run(function(error, featureCollection, response){  // you shouldn't do this again if you already have
+            queryParcel.run(function(error, featureCollection, response){
                 app.data.gis.curFeatGeo = featureCollection.features[0].geometry
-                app.gis.drawPolygon(app.data.gis.curFeatGeo)
+                app.gis.flipCoords(app.data.gis.curFeatGeo)
             });
-        }, // end of getGeom
+        },
 
-        //function drawPolygon(someGeometry){
-        drawPolygon : function(someGeometry) {
-            if (map.hasLayer(app.data.gis.curPolygon)){
-                map.removeLayer(app.data.gis.curPolygon)
-            }
-            app.data.gis.curFeatCoord_del = app.data.gis.curFeatGeo.coordinates[0]
+        flipCoords : function(geoObj){
+            app.data.gis.curFeatCoord_del = geoObj.coordinates[0]
             app.data.gis.curFeatFlipCoord_del = []
             for (i = 0; i < app.data.gis.curFeatCoord_del.length; i++){
                 app.data.gis.curFeatFlipCoord_del[i] = []
                 app.data.gis.curFeatFlipCoord_del[i][0] = app.data.gis.curFeatCoord_del[i][1]
                 app.data.gis.curFeatFlipCoord_del[i][1] = app.data.gis.curFeatCoord_del[i][0]
             }
-            app.data.gis.curPolygon = L.polygon([app.data.gis.curFeatFlipCoord_del], {
+            app.util.resolveGis.resolve();
+        }, // end of flipCoords
+
+        //function drawPolygon(geoObj){
+        drawPolygon : function(geoObj, thelatlon) {
+            app.data.gis.layerGroup.clearLayers()
+            if (app.settings.moveMode == true){  // true if search button was clicked or if page is loaded w address parameter, false if a parcel was clicked
+                latlon = new L.LatLng(thelatlon[0],thelatlon[1])
+                map.setView(latlon, 18)
+            }
+            app.data.gis.layerGroup.addLayer(L.polygon([geoObj], {
                 color: 'blue',
                 weight: 2
-            })
-            map.addLayer(app.data.gis.curPolygon)
+            }))
         } // end of drawPolygon
+
     }; // end of return
 })(); // end of app.gis
 
