@@ -1,3 +1,7 @@
+/*
+This is run first, before app.js
+some app. variables must be created here
+*/
 
 var app = {};
 app.util = {}
@@ -17,22 +21,27 @@ app.gis = (function () {
     return {
         //theObject: queryParcel,
         initMap : function () {
+            app.settings.clickedOnMap = false
+            app.settings.moveMode = true
             var CITY_HALL = [39.952388, -75.163596];
             map = L.map('map', {
                zoomControl: false,
-            //   measureControl: true,
+               //measureControl: true,
             });
-            map.setView(CITY_HALL, 16);
+            map.setView(CITY_HALL, 18);
 
             // Basemaps
             var baseMapLight = L.esri.tiledMapLayer({
-                url: "https://tiles.arcgis.com/tiles/fLeGjb7u4uXqeF9q/arcgis/rest/services/CityBasemap/MapServer"
+                url: "https://tiles.arcgis.com/tiles/fLeGjb7u4uXqeF9q/arcgis/rest/services/CityBasemap/MapServer",
+                maxZoom: 22
             });
             var baseMapDark = L.esri.tiledMapLayer({
-                url: "https://tiles.arcgis.com/tiles/fLeGjb7u4uXqeF9q/arcgis/rest/services/CityBasemap_Slate/MapServer"
+                url: "https://tiles.arcgis.com/tiles/fLeGjb7u4uXqeF9q/arcgis/rest/services/CityBasemap_Slate/MapServer",
+                maxZoom: 22
             });
             var baseMapImagery2015 = L.esri.tiledMapLayer({
-                url: "https://tiles.arcgis.com/tiles/fLeGjb7u4uXqeF9q/arcgis/rest/services/CityImagery_2015_3in/MapServer"
+                url: "https://tiles.arcgis.com/tiles/fLeGjb7u4uXqeF9q/arcgis/rest/services/CityImagery_2015_3in/MapServer",
+                maxZoom: 22
             });
             baseMapLight.addTo(map);
 
@@ -81,11 +90,10 @@ app.gis = (function () {
                 queryParcel.run(function(error, featureCollection, response){  // this is a slow process - only want to do it once
                     var address = featureCollection.features[0].properties.ADDRESS
                     app.data.gis.curFeatGeo = featureCollection.features[0].geometry
-
                     var params = {'address': address}
                     var queryStringParams = app.util.serializeQueryStringParams(params)
                     if (queryStringParams) {
-                        history.pushState(null, null, '?' + queryStringParams); // when you submit it pushes a new history.state - but it just has an href, not a state obj
+                        history.pushState(null, null, '?' + queryStringParams); // when click it pushes a new history.state - just an href, not a state obj
                         window.scroll(0, 0);
                         app.util.ais(address) // calls ais, which does a replaceState to the history to add objects
                     }
@@ -94,6 +102,7 @@ app.gis = (function () {
         }, // end of initMap
 
         getGeomFromLatLon : function(latlon){
+            //console.log('it did getGeom')
             queryParcel.contains(latlon)
             queryParcel.run(function(error, featureCollection, response){
                 app.data.gis.curFeatGeo = featureCollection.features[0].geometry
@@ -102,12 +111,12 @@ app.gis = (function () {
         },
 
         flipCoords : function(geoObj){
-            app.data.gis.curFeatCoord_del = geoObj.coordinates[0]
-            app.data.gis.curFeatFlipCoord_del = []
-            for (i = 0; i < app.data.gis.curFeatCoord_del.length; i++){
-                app.data.gis.curFeatFlipCoord_del[i] = []
-                app.data.gis.curFeatFlipCoord_del[i][0] = app.data.gis.curFeatCoord_del[i][1]
-                app.data.gis.curFeatFlipCoord_del[i][1] = app.data.gis.curFeatCoord_del[i][0]
+            app.data.gis.curFeatCoord = geoObj.coordinates[0]
+            app.data.gis.curFeatFlipCoord = []
+            for (i = 0; i < app.data.gis.curFeatCoord.length; i++){
+                app.data.gis.curFeatFlipCoord[i] = []
+                app.data.gis.curFeatFlipCoord[i][0] = app.data.gis.curFeatCoord[i][1]
+                app.data.gis.curFeatFlipCoord[i][1] = app.data.gis.curFeatCoord[i][0]
             }
             app.util.resolveGis.resolve();
         }, // end of flipCoords
@@ -117,7 +126,7 @@ app.gis = (function () {
             app.data.gis.layerGroup.clearLayers()
             if (app.settings.moveMode == true){  // true if search button was clicked or if page is loaded w address parameter, false if a parcel was clicked
                 latlon = new L.LatLng(thelatlon[0],thelatlon[1])
-                map.setView(latlon, 18)
+                map.setView(latlon, 20)
             }
             app.data.gis.layerGroup.addLayer(L.polygon([geoObj], {
                 color: 'blue',

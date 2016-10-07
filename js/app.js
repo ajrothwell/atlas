@@ -1,3 +1,7 @@
+/*
+This is run second, after gis.js
+most app. variables are initiated here
+*/
 
 window.app = app;
 app.views = {};
@@ -7,7 +11,6 @@ var theSerQSParams
 
 app.globals = {}
 app.globals.ais_api = 'https://api.phila.gov/ais/v1/addresses/'
-//app.globals.ais_api = 'http://ec2-54-175-56-73.compute-1.amazonaws.com/addresses/'
 app.globals.li_api = 'http://api.phila.gov/li/v1/'
 app.globals.opa_api = 'https://api.phila.gov/opa/v1.1/account/'
 app.globals.PennStatePlane = '+proj=lcc +lat_1=40.96666666666667 +lat_2=39.93333333333333 +lat_0=39.33333333333334 +lon_0=-77.75 +x_0=600000 +y_0=0 +ellps=GRS80 +datum=NAD83 +to_meter=0.3048006096012192 +no_defs';
@@ -15,9 +18,8 @@ app.globals.WGS84 = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs';
 
 app.settings = {}
 app.settings.latlon = []
-app.settings.moveMode = false
-app.settings.clickedOnMap = false
-app.settings.opaRetrieved = false
+//app.settings.moveMode = true
+//app.settings.clickedOnMap = false
 
 app.util.resolveAddress = $.Deferred();
 app.util.resolveOpa = $.Deferred();
@@ -36,8 +38,8 @@ app.data.ais = {}
 
 //app.data.gis = {}
 app.data.gis.curFeatGeo = {}
-app.data.gis.curFeatCoord_del
-app.data.gis.curFeatFlipCoord_del = []
+app.data.gis.curFeatCoord
+app.data.gis.curFeatFlipCoord = []
 app.data.gis.curPolygon
 
 app.data.opa = {}
@@ -64,7 +66,6 @@ app.settings = {
 // Routing - whenever page loads or history is changed, this happens
 app.route = function () {
     //console.log(window.location.hash)
-    //app.settings.moveMode = true // not sure why this makes sense
     $('.data-row:visible').slideUp(350)
     var curHash = window.location.hash
 
@@ -83,8 +84,9 @@ app.route = function () {
     }
     var params = $.deparam(window.location.search.substr(1));
     if (params.address) {
-
-        if (!history.state.address){ //if there is no history, do a new api call
+        //alert('it routed to having an address')
+        if (!history.state){ //if there is no history, do a new api call
+            //alert('it rounted to having no history and address: ' + params.address)
             app.util.ais(params.address)
         } else if (params.address.toLowerCase() != history.state.address.toLowerCase()){ //if the query string does not match the history, do a new api call
             app.util.ais(params.address)
@@ -104,18 +106,10 @@ app.route = function () {
     }
 };
 
-// Route on page load and back button
+// Route on page load
 $(app.route);
-window.onpopstate = app.route; // when history changes, a popstate event takes place, so route is called
-/*window.onhashchange = function(){
-    console.log('hashchange event happened')
-    app.route;
-}*/
-
-
-//var theA
-//var thePath
-var theHistory
+// when history changes, a popstate event takes place, so route is called
+window.onpopstate = app.route;
 
 // anchor tag clicks
 $('.data-row-link').click(function (e) {
@@ -134,7 +128,6 @@ $('.data-row-link').click(function (e) {
     app.route()
 });
 
-
 // Make ext links open in new window
 $('a').each(function() {
    var a = new RegExp('/' + window.location.host + '/');
@@ -146,9 +139,6 @@ $('a').each(function() {
        });
    }
 });
-
-
-
 
 // set up app.hooks for calling HTML elements
 $('[data-hook]').each(function (i, el) {
@@ -198,13 +188,13 @@ app.util.serializeQueryStringParams = function(obj) {
 // one of 2 ways to call AIS
 $('#theForm').on('submit', function(e){
     e.preventDefault();
-    app.settings.moveMode = true // this means the map moves - but it now controls more than that, maybe should be changed
+    app.settings.moveMode = true
     app.settings.clickedOnMap = false
     var params = app.util.serializeObject(this)
     var queryStringParams = app.util.serializeQueryStringParams(params)
     if (params) {
         $(this).find('input').blur();
-        history.pushState(null, params, '?' + queryStringParams); // when you submit it pushes a new history.state - but it just has an href, not a state obj
+        history.pushState(null, params, '?' + queryStringParams); // what if this is a replacestate until it resolves the address, then becomes a push?  when you submit it pushes a new history.state - but it just has an href, not a state obj
         window.scroll(0, 0);
         app.util.ais(params.address) // calls ais, which does a replaceState to the history to add objects
     }

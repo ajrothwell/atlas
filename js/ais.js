@@ -31,7 +31,13 @@ app.util.ais = function(address){
                 $('#addressList').empty()
 
                 app.data.ais.curAIS = data.features[$(this).attr('number')]
+                var address = data.features[$(this).attr('number')].properties.street_address
+                var params = {'address': address}
+                var queryStringParams = app.util.serializeQueryStringParams(params)
+                //console.log(queryStringParams)
+                history.replaceState(null, null, '?' + queryStringParams)
                 app.util.resolveAddress.resolve();
+
             })
         } else {
             app.data.ais.curAIS = data.features[0]
@@ -49,8 +55,10 @@ app.util.ais = function(address){
             //    map.setView(latlon, 18)
             //}
             if (app.settings.clickedOnMap == false){
+                //console.log('it routed to clickedonmap false')
                 app.gis.getGeomFromLatLon(latlon)
             } else {
+                //console.log('it routed to straight to flipCoords')
                 app.gis.flipCoords(app.data.gis.curFeatGeo)
             }
             // check opa stuff - see if I shouldn't do this here
