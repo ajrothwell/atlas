@@ -1,6 +1,6 @@
 
 app.util.ais = function(address){
-    var aisUrl = app.globals.ais_api + address + '?format=json&gatekeeperKey=bba80c1760c109a695b0c37e5a548a92'
+    var aisUrl = app.globals.ais_api + address + '?format=json&gatekeeperKey=35ae5b7bf8f0ff2613134935ce6b4c1e'
     $.ajax(aisUrl,
         {dataType: app.settings.ajaxType})
         .done(function(data){
